@@ -1,5 +1,7 @@
 # Node template
 .env.prod
+app.yaml
+credentials.json
 
 # Logs
 logs

@@ -15,7 +15,17 @@
       }
     },
     "mail": {
-      "transport": "Direct"
+      "transport": "SMTP",
+      "options": {
+          "service": "Mailgun",
+          "host": "smtp.mailgun.org",
+          "port": 465,
+          "secureConnection": true,
+          "auth": {
+              "user": "<%- MAIL_USER %>",
+              "pass": "<%- MAIL_PASSWORD %>"
+          }
+      }
     },
     "logging": {
         "level": "error",
