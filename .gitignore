@@ -1,4 +1,5 @@
 # Node template
+.env.prod
 
 # Logs
 logs

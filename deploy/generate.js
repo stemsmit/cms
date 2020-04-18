@@ -9,10 +9,11 @@ const logError = (err) => {
     }
 };
 
-function buildGhostProdConfig() {
-    const template = fs.readFileSync(path.resolve(__dirname, 'config.prod.ejs'), 'utf-8');
-    const content = ejs.render(template, args);
-    fs.writeFileSync(path.resolve(__dirname, '../', 'config.production.json'), content, logError);
+function generate(inFileRel, outFileRel, data){
+    const template = fs.readFileSync(path.resolve(__dirname, inFileRel), 'utf-8');
+    const content = ejs.render(template, data);
+    fs.writeFileSync(path.resolve(__dirname, outFileRel), content, logError);
 }
 
-buildGhostProdConfig();
+generate('config.prod.ejs', '../config.production.json', args);
+generate('app.ejs', '../app.yaml', args);

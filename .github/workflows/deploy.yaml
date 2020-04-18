@@ -2,8 +2,9 @@ name: Deploy
 
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+        - master
 
 jobs:
   Deploy:
@@ -12,7 +13,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
-
+      with: 
+        submodules: recursive
     - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         version: '270.0.0'
@@ -20,9 +22,9 @@ jobs:
         service_account_key: ${{ secrets.GAE_KEY }}
     - name: Deploy
       run: |
-        npm ci
-        node ./deploy/generate --APP_URL=${{ secrets.APP_URL }} --DB_CLIENT=${{ secrets.DB_CLIENT }} --DB_HOST=${{ secrets.DB_HOST }} --PORT=${{ secrets.PORT }} --DB_PORT=${{ secrets.DB_PORT }} --DB_USER=${{ secrets.DB_USER }} --DB_PASSWORD=${{ secrets.DB_PASSWORD }} --DB_NAME=${{ secrets.DB_NAME }} --GCS_BUCKET=${{ secrets.GCS_BUCKET }}
-        echo "${{ secrets.PROD_ENV }}" > ./.env
-        npm run build
+        yarn install --frozen-lockfile
+        echo "${{ secrets.SVC_CREDENTIALS }}" > ./credentials.json
+        node ./deploy/generate --APP_URL=${{ secrets.APP_URL }} --DB_INSTANCE_CONNECTION=${{ secrets.DB_INSTANCE_CONNECTION }} --DB_CLIENT=${{ secrets.DB_CLIENT }} --DB_PORT=${{ secrets.DB_PORT }} --DB_USER=${{ secrets.DB_USER }} --DB_PASSWORD=${{ secrets.DB_PASSWORD }} --DB_NAME=${{ secrets.DB_NAME }} --GCS_BUCKET=${{ secrets.GCS_BUCKET }}
+        yarn add ghost-v3-google-cloud-storage
+        cp -R node_modules/ghost-v3-google-cloud-storage/* content/adapters/storage/gcs/
         gcloud app deploy app.yaml --project ${{ secrets.GAE_PROJECT }}
-        gcloud app deploy cron.yaml --project ${{ secrets.GAE_PROJECT }}

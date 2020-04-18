@@ -1,13 +1,13 @@
 {
     "url": "<%- APP_URL %>",
     "server": {
-      "port": <%- PORT %>,
+      "port": 8080,
       "host": "0.0.0.0"
     },
     "database": {
       "client": "<%- DB_CLIENT %>",
       "connection": {
-        "host": "<%- DB_HOST %>",
+        "socketPath": "/cloudsql/<%- DB_INSTANCE_CONNECTION %>",
         "port": "<%- DB_PORT %>",
         "user": "<%- DB_USER %>",
         "password": "<%- DB_PASSWORD %>",
@@ -18,18 +18,20 @@
       "transport": "Direct"
     },
     "logging": {
-      "transports": [
-        "file",
-        "stdout"
-      ]
+        "level": "error",
+        "rotation": {
+            "enabled": true
+        },
+        "transports": []
     },
+    "process": "systemd",
     "paths": {
-      "contentPath": "/var/lib/ghost/content"
+      "contentPath": "content/"
     },
     "storage": {
-        "active": "ghost-gcs",
-        "ghost-gcs": {
-            "key": "credentials.json",
+        "active": "gcs",
+        "gcs": {
+            "keyFilename": "credentials.json",
             "bucket": "<%- GCS_BUCKET %>"
         }
     }
