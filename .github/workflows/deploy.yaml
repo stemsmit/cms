@@ -1,0 +1,28 @@
+name: Deploy
+
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  Deploy:
+    name: Deploy to AppEngine
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GAE_EMAIL }}
+        service_account_key: ${{ secrets.GAE_KEY }}
+    - name: Deploy
+      run: |
+        npm ci
+        node ./deploy/generate --APP_URL=${{ secrets.APP_URL }} --DB_CLIENT=${{ secrets.DB_CLIENT }} --DB_HOST=${{ secrets.DB_HOST }} --PORT=${{ secrets.PORT }} --DB_PORT=${{ secrets.DB_PORT }} --DB_USER=${{ secrets.DB_USER }} --DB_PASSWORD=${{ secrets.DB_PASSWORD }} --DB_NAME=${{ secrets.DB_NAME }} --GCS_BUCKET=${{ secrets.GCS_BUCKET }}
+        echo "${{ secrets.PROD_ENV }}" > ./.env
+        npm run build
+        gcloud app deploy app.yaml --project ${{ secrets.GAE_PROJECT }}
+        gcloud app deploy cron.yaml --project ${{ secrets.GAE_PROJECT }}
