@@ -2,9 +2,8 @@ name: Deploy
 
 
 on:
-  push:
-    branches:
-        - master
+  release:
+    types: [created]
 
 jobs:
   Deploy:
@@ -22,7 +21,6 @@ jobs:
         service_account_key: ${{ secrets.GAE_KEY }}
     - name: Deploy
       run: |
-        yarn install --frozen-lockfile
         echo "${{ secrets.SVC_CREDENTIALS }}" > ./credentials.json
         node ./deploy/generate --APP_URL=${{ secrets.APP_URL }} --DB_INSTANCE_CONNECTION=${{ secrets.DB_INSTANCE_CONNECTION }} --DB_CLIENT=${{ secrets.DB_CLIENT }} --DB_PORT=${{ secrets.DB_PORT }} --DB_USER=${{ secrets.DB_USER }} --DB_PASSWORD=${{ secrets.DB_PASSWORD }} --DB_NAME=${{ secrets.DB_NAME }} --GCS_BUCKET=${{ secrets.GCS_BUCKET }} --MAIL_USER=${{ secrets.MAIL_USER }} --MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
         yarn add ghost-v3-google-cloud-storage
